@@ -1,0 +1,539 @@
+# Hotel Guest Assistant — Backend
+
+Backend service for the **AI-Powered Hotel Guest Assistant** assignment.
+
+The backend provides REST APIs that allow guests to ask questions about the hotel, receive AI-assisted answers based on hotel information, maintain basic conversation context, and check room availability.
+
+---
+
+## 1. Overview
+
+The backend is built using **Java and Spring Boot**.
+
+It is responsible for:
+
+* Receiving guest questions from the frontend
+* Maintaining basic conversation context
+* Using the hotel's knowledge base to answer questions
+* Using an AI model where appropriate
+* Identifying room availability requests
+* Calling a mock availability function
+* Returning structured responses to the frontend
+* Handling invalid requests and failures
+* Providing fallback responses when an answer cannot be reliably determined
+* Running automated tests for important backend flows
+
+The frontend communicates with this backend instead of calling the AI model directly.
+
+---
+
+## 2. Technology Stack
+
+* **Java**
+* **Spring Boot**
+* **Spring Web**
+* **Maven**
+* **REST API**
+* **JUnit / Jest** for testing
+* **AI / LLM**
+* **JSON-based Hotel Knowledge Base**
+
+---
+
+## 3. Backend Architecture
+
+The basic request flow is:
+
+```text
+Frontend
+   |
+   | HTTP Request
+   ↓
+Spring Boot REST API
+   |
+   ↓
+Controller
+   |
+   ↓
+Service Layer
+   |
+   ├── Conversation Context
+   |
+   ├── Hotel Knowledge Base
+   |
+   ├── AI / LLM
+   |
+   └── Availability Tool
+   |
+   ↓
+Chat Response
+   |
+   ↓
+Frontend
+```
+
+### Availability Flow
+
+```text
+Guest asks about room availability
+              |
+              ↓
+        Backend identifies
+        availability request
+              |
+              ↓
+     Extract check-in date
+     check-out date
+     number of guests
+              |
+              ↓
+       checkAvailability()
+              |
+              ↓
+       Mock availability data
+              |
+              ↓
+        Structured response
+```
+
+---
+
+## 4. Project Structure
+
+Example backend structure:
+
+```text
+backend/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── hotel/
+│   │   │           └── hotel_assistant/
+│   │   │               ├── controller/
+│   │   │               ├── service/
+│   │   │               ├── model/
+│   │   │               ├── dto/
+│   │   │               ├── config/
+│   │   │               └── ...
+│   │   │
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       └── ...
+│   │
+│   └── test/
+│       └── java/
+│
+├── pom.xml
+└── README.md
+```
+
+---
+
+## 5. Hotel Knowledge Base
+
+The application uses hotel information as its source of truth.
+
+The knowledge base contains information such as:
+
+* Hotel information
+* Rooms
+* Room capacity
+* Amenities
+* Breakfast information
+* Check-in / check-out information
+* Cancellation policy
+* Frequently asked questions
+
+The AI should use the available hotel information instead of inventing unsupported information.
+
+---
+
+## 6. Chat API
+
+### Endpoint
+
+```http
+POST /api/chat
+```
+
+### Request
+
+```json
+{
+  "message": "What time is check-in?",
+  "conversationId": "conversation-123"
+}
+```
+
+### Example Response
+
+```json
+{
+  "response": "Check-in is available from 2:00 PM.",
+  "conversationId": "conversation-123"
+}
+```
+
+The exact response fields may vary depending on the implementation.
+
+---
+
+## 7. Follow-up Questions
+
+The backend supports basic conversation context.
+
+For example:
+
+### First question
+
+```text
+Guest:
+Which room is suitable for 3 guests?
+```
+
+### Follow-up
+
+```text
+Guest:
+Does it include breakfast?
+```
+
+The backend can use the existing conversation context to understand what "it" refers to.
+
+---
+
+## 8. Room Availability
+
+Availability requests are handled separately from normal hotel information questions.
+
+The backend identifies when the guest is asking for availability and uses a deterministic availability function such as:
+
+```java
+checkAvailability(checkIn, checkOut, adults)
+```
+
+Example request:
+
+```json
+{
+  "message": "Do you have rooms available from September 20 to September 22 for 2 adults?",
+  "conversationId": "conversation-123"
+}
+```
+
+The backend validates the required information and returns the available rooms.
+
+Example:
+
+```json
+{
+  "available": true,
+  "rooms": [
+    {
+      "roomType": "Deluxe Room",
+      "capacity": 2
+    }
+  ],
+  "conversationId": "conversation-123"
+}
+```
+
+Availability is handled using deterministic application logic rather than allowing the AI model to invent room availability.
+
+---
+
+## 9. AI Integration
+
+The AI model is used where natural-language understanding and response generation are useful.
+
+Examples include:
+
+* Understanding guest questions
+* Generating natural responses
+* Handling conversational follow-up questions
+* Using hotel information to formulate an answer
+
+The backend remains responsible for deterministic operations such as:
+
+* Input validation
+* Availability checking
+* Required-field validation
+* Error handling
+* Business rules
+
+This separation reduces the possibility of unsupported AI-generated information.
+
+---
+
+## 10. Fallback Handling
+
+If the backend cannot reliably answer a question using the available hotel information, it should return a fallback response instead of generating an unsupported answer.
+
+Example:
+
+```text
+I'm sorry, I don't have enough information to answer that question.
+Please contact the hotel reception for more information.
+```
+
+This helps reduce hallucinations and prevents the assistant from presenting unknown information as fact.
+
+---
+
+## 11. Validation
+
+The backend performs basic validation for incoming requests.
+
+Examples include:
+
+* Empty guest messages
+* Missing conversation information where required
+* Missing check-in date
+* Missing check-out date
+* Missing number of guests
+* Invalid date ranges
+* Invalid guest counts
+
+Invalid requests should return a clear error response.
+
+---
+
+## 12. Error Handling
+
+The backend handles failures from different parts of the application.
+
+Possible failure scenarios include:
+
+* Invalid API request
+* AI model failure
+* Availability service failure
+* Unexpected backend exception
+* Missing hotel information
+
+The API should return a clear response rather than exposing internal implementation details.
+
+---
+
+## 13. API Examples
+
+### Ask a hotel question
+
+```bash
+curl -X POST http://localhost:8080/api/chat \
+  -H "Content-Type: application/json" \
+  -d "{\"message\":\"What time is check-in?\",\"conversationId\":\"conversation-123\"}"
+```
+
+### Ask about amenities
+
+```bash
+curl -X POST http://localhost:8080/api/chat \
+  -H "Content-Type: application/json" \
+  -d "{\"message\":\"Does the hotel have a swimming pool?\",\"conversationId\":\"conversation-123\"}"
+```
+
+### Ask about availability
+
+```bash
+curl -X POST http://localhost:8080/api/chat \
+  -H "Content-Type: application/json" \
+  -d "{\"message\":\"Do you have rooms available for September 20 to September 22 for 2 adults?\",\"conversationId\":\"conversation-123\"}"
+```
+
+> Update the endpoint or request fields above if your actual controller uses a different path or DTO structure.
+
+---
+
+## 14. Configuration
+
+Create/configure the required application properties in:
+
+```text
+src/main/resources/application.properties
+```
+
+AI-related configuration should be provided through environment variables rather than committing secrets to GitHub.
+
+Example:
+
+```properties
+server.port=8080
+
+# AI configuration
+AI_API_KEY=${AI_API_KEY}
+```
+
+Do not commit API keys or other sensitive credentials to the repository.
+
+---
+
+## 15. Running the Backend
+
+### Prerequisites
+
+Install:
+
+* Java
+* Maven
+
+Verify Java:
+
+```bash
+java -version
+```
+
+Verify Maven:
+
+```bash
+mvn -version
+```
+
+---
+
+### Clone the repository
+
+```bash
+git clone <your-github-repository-url>
+```
+
+Navigate to the backend:
+
+```bash
+cd backend
+```
+
+---
+
+### Start the application
+
+Using Maven:
+
+```bash
+mvn spring-boot:run
+```
+
+The backend will start on:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## 16. Running Tests
+
+Run the backend tests using:
+
+```bash
+mvn test
+```
+
+The tests cover important application flows such as:
+
+* Normal hotel questions
+* Availability requests
+* Missing information
+* Unsupported questions
+* Follow-up questions
+* Validation
+* Error/fallback scenarios
+
+---
+
+## 17. Testing & Evaluation
+
+The application is evaluated using scenarios including:
+
+1. Normal hotel question
+2. Amenity question
+3. Room suitability question
+4. Policy question
+5. Availability request
+6. Availability request with missing information
+7. Ambiguous question
+8. Unsupported question
+9. Conversation follow-up
+10. AI/backend failure
+
+The expected behavior and observed results are documented as part of the project evaluation.
+
+---
+
+## 18. AI Hallucination Prevention
+
+The application follows these principles:
+
+1. Hotel information comes from the configured knowledge base.
+2. The AI is not responsible for inventing hotel policies or room availability.
+3. Availability is handled through deterministic backend logic.
+4. Unsupported questions receive a fallback response.
+5. AI-generated responses are based on the information available to the application.
+
+---
+
+## 19. Security Considerations
+
+* AI API keys are stored outside frontend code.
+* Sensitive configuration is provided through environment variables.
+* The frontend does not directly communicate with the AI provider.
+* Backend errors should not expose internal implementation details.
+
+---
+
+## 20. Future Improvements
+
+Possible improvements for a production version include:
+
+* Persistent conversation storage
+* Database-backed hotel knowledge base
+* Real hotel booking/availability integration
+* Authentication for hotel staff
+* Better AI evaluation and monitoring
+* Rate limiting
+* Centralized logging
+* Observability and metrics
+* Production deployment
+* More comprehensive integration and end-to-end testing
+
+---
+
+## 21. AI Tools Used
+
+AI-assisted development tools used during the project may include:
+
+* ChatGPT
+
+AI tools were used for development assistance, debugging, implementation guidance, and testing ideas. All important application decisions and implementation details should be understood and explainable by the developer.
+
+---
+
+## 22. Related Frontend
+
+The frontend application provides the guest-facing chat interface and communicates with this backend through REST APIs.
+
+```text
+Frontend → Backend API → Hotel Knowledge / AI / Availability
+```
+
+---
+
+## 23. Assignment Requirements Covered
+
+The backend addresses the following assignment requirements:
+
+* Guest question API
+* Conversation context
+* Hotel knowledge base
+* Hotel FAQ and policy questions
+* Room availability detection
+* Availability tool/function
+* AI integration
+* Deterministic business logic
+* Fallback responses
+* Validation
+* Error handling
+* Logging
+* Automated tests
+* Frontend/backend integration

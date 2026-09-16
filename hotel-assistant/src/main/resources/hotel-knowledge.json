@@ -1,0 +1,44 @@
+{
+  "hotel": {
+    "name": "Grand Stay Hotel",
+    "description": "A comfortable city hotel suitable for business and leisure travelers.",
+    "checkIn": "3:00 PM",
+    "checkOut": "11:00 AM"
+  },
+
+  "breakfast": {
+    "included": true,
+    "time": "7:00 AM - 10:00 AM",
+    "location": "Main Restaurant"
+  },
+
+  "amenities": [
+    "Swimming pool",
+    "Free Wi-Fi",
+    "Fitness center",
+    "Restaurant",
+    "Free parking",
+    "24-hour front desk"
+  ],
+
+  "policies": {
+    "cancellation": "Free cancellation up to 24 hours before check-in.",
+    "pets": "Pets are not allowed.",
+    "smoking": "The hotel is non-smoking."
+  },
+
+  "rooms": [
+    {
+      "name": "Deluxe Room",
+      "capacity": 2,
+      "beds": "1 King Bed",
+      "pricePerNight": 120
+    },
+    {
+      "name": "Family Room",
+      "capacity": 4,
+      "beds": "2 Queen Beds",
+      "pricePerNight": 180
+    }
+  ]
+}
