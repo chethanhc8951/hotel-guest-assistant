@@ -8,6 +8,14 @@ The frontend communicates with the **Spring Boot backend** through REST APIs. Th
 
 ---
 
+
+<img width="1886" height="915" alt="Screenshot 2026-09-16 170300" src="https://github.com/user-attachments/assets/960551ed-0e99-416f-ac76-eb0313c0d275" />
+<img width="1887" height="912" alt="Screenshot 2026-09-16 170030" src="https://github.com/user-attachments/assets/b7402b0d-2509-4770-a504-74da1458a6db" />
+<img width="1919" height="918" alt="Screenshot 2026-09-16 165843" src="https://github.com/user-attachments/assets/4bf5f678-b278-4e86-b541-fff60f410fd4" />
+
+
+
+
 ## 1. Overview
 
 The frontend allows guests to:
