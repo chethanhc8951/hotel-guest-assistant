@@ -6,6 +6,8 @@ The backend provides REST APIs that allow guests to ask questions about the hote
 
 ---
 
+
+
 ## 1. Overview
 
 The backend is built using **Java and Spring Boot**.
