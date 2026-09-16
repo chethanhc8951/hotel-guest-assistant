@@ -2,6 +2,8 @@
 
 Spring Boot backend for an AI-powered hotel guest assistant.
 
+VIDEO LINK : https://drive.google.com/file/d/1SE_gRPI2t7vUaSFY51aSflq3hlrH0bIn/view?usp=drive_link
+
 ## Features
 
 * Hotel FAQ and information queries
