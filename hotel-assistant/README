@@ -2,9 +2,13 @@
 
 Backend service for the **AI-Powered Hotel Guest Assistant** assignment.
 
+
+
 The backend provides REST APIs that allow guests to ask questions about the hotel, receive AI-assisted answers based on hotel information, maintain basic conversation context, and check room availability.
 
 ---
+
+
 
 
 
